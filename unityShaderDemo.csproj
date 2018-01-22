@@ -78,11 +78,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\NewBehaviourScript.cs" />
-    <Compile Include="Assets\Scripts\PostEffectBase.cs" />
+    <Compile Include="Assets\Scripts\BSC_ImageEffect.cs" />
+    <Compile Include="Assets\Scripts\ImageEffectBase.cs" />
     <Compile Include="Assets\fog\AltitudeFog_ImageEffect.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Assets\Shader\BSC_ImageEffect.shader" />
     <None Include="Assets\fog\shader\AltitudeFog.shader" />
     <None Include="Assets\fog\shader\AltitudeFog_ImageEffect.shader" />
     <None Include="Assets\fog\shader\Depth.shader" />

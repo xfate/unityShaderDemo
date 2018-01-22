@@ -4,18 +4,18 @@ using UnityEngine;
 
 [ExecuteInEditMode]
 [RequireComponent(typeof(Camera))]
-public class PostEffectBase : MonoBehaviour {
+public class ImageEffectBase : MonoBehaviour {
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start() {
         CheckResource();
 
     }
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+
+    // Update is called once per frame
+    void Update() {
+
+    }
 
     protected bool CheckSupport()
     {
@@ -29,12 +29,12 @@ public class PostEffectBase : MonoBehaviour {
             enabled = false;
         }
     }
-    protected Material CheckShaderAndCreateMaterial(Shader shader,Material mat)
+    protected Material CheckShaderAndCreateMaterial(Shader shader, Material mat)
     {
+        if (shader == null  || !shader.isSupported)
+            return null;
         if (shader.isSupported && mat && mat.shader == shader)
             return mat;
-        if (!shader.isSupported)
-            return null;
         else
         {
             var material = new Material(shader);
