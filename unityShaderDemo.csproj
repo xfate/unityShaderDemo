@@ -84,6 +84,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Shader\BSC_ImageEffect.shader" />
+    <None Include="Assets\Shader\EdgeCheck_ImageEffect.shader" />
     <None Include="Assets\fog\shader\AltitudeFog.shader" />
     <None Include="Assets\fog\shader\AltitudeFog_ImageEffect.shader" />
     <None Include="Assets\fog\shader\Depth.shader" />
