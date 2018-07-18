@@ -6,7 +6,7 @@
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace></RootNamespace>
-    <ProjectGuid>{8D688D43-993B-2FA0-A805-84605C9BB93A}</ProjectGuid>
+    <ProjectGuid>{CC1034B8-F98C-66E7-E712-C3D99C89201C}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <AssemblyName>Assembly-CSharp</AssemblyName>
@@ -46,6 +46,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\NewBehaviourScript.cs" />
+     <Compile Include="Assets\Scripts\PostEffectBase.cs" />
      <Compile Include="Assets\fog\AltitudeFog_ImageEffect.cs" />
      <None Include="Assets\fog\shader\AltitudeFog.shader" />
      <None Include="Assets\fog\shader\Depth.shader" />
