@@ -2,12 +2,17 @@
 {
 	Properties
 	{
-		_MatCap ("Mat Cap",2D) = "white" {}
+		_MatCap ("反射贴图",2D) = "white" {}
 		_MainColor("Main Color",color) = (1,1,1,1)
 		_MainTex("Main Tex",2D)=""{}
 		_NormalMap("Normal Map",2D)=""{}
+		_RefractMatCap ("Refract Cap",2D) = "white" {}
 		_FrenselScale("Frensel Scale",Range(0,1)) = 0.5
-		_RefractRatio("_RefractRatio",float) = 1
+		_RefractRatio("折射系数",float) = 1
+		_RefractColor("折射颜色",Color) = (0.5,0.5,0.5,1)
+		_reflRatio("反射系数",float) = 0.4
+		_ReflColor("反射颜色",Color) = (0.5,0.5,0.5,1)
+
 	}
 	SubShader
 	{
@@ -38,9 +43,13 @@
 			sampler2D _MatCap;
 			sampler2D _MainTex;
 			sampler2D _NormalMap;
+			sampler2D _RefractMatCap;
 			float _FrenselScale;
 			fixed4 _MainColor;
 			float _RefractRatio;
+			float4 _RefractColor;
+			float4 _ReflColor;
+			float _reflRatio;
 			v2f vert (appdata v)
 			{
 				v2f o;
@@ -66,15 +75,27 @@
                 worldNorm.x = dot(i.TtoW1.xyz,normal);
                 worldNorm.y = dot(i.TtoW2.xyz,normal);
                 worldNorm.z = dot(i.TtoW3.xyz,normal);
-                fixed3 worldNormView = normalize(mul((float3x3)UNITY_MATRIX_V,worldNorm));
-				worldNormView.xy  = worldNormView.xy * 0.5 + 0.5;
-                fixed4 matcapColor = tex2D(_MatCap,worldNormView.xy);
 				half3 worldPos = half3(i.TtoW1.w,i.TtoW2.w,i.TtoW3.w);
 				fixed3 worldViewDir = UnityWorldSpaceViewDir(worldPos);
-				fixed frensel = _FrenselScale + (1 - _FrenselScale) * pow(1 - dot(worldViewDir,worldNorm),5);
+                fixed3 worldNormView = normalize(mul((float3x3)UNITY_MATRIX_V,worldNorm));
+				worldNormView.xy  = worldNormView.xy * 0.5 + 0.5;
+
+				//反射
+				float3 reflectDir = reflect(-worldViewDir,worldNorm);
+				float2 reflectuv =  normalize(mul((float3x3)UNITY_MATRIX_V,reflectDir));
+				reflectuv = reflectuv.xy * _reflRatio + 0.5;
+				fixed4 reflectColor = tex2D(_MatCap,reflectuv.xy)*_ReflColor;
+				//折射
+				fixed3 worldRefr = refract(-normalize(worldViewDir), normalize(worldNorm), 0.75f);
+				float2 refractuv =  normalize(mul((float3x3)UNITY_MATRIX_V,worldRefr));
+				refractuv = refractuv.xy * _RefractRatio + 0.5;
+				fixed4 refractColor = tex2D(_RefractMatCap,refractuv.xy)*_RefractColor;
+
+		
+				//fixed frensel = _FrenselScale + (1 - _FrenselScale) * pow(1 - dot(worldViewDir,worldNorm),5);
 				fixed4 diffuse = mainTexColor*_MainColor;
-				fixed3 worldRefr = refract(-normalize(worldViewDir), normalize(worldNorm), _RefractRatio);
-                return lerp(float4(worldRefr,1.0f)*matcapColor,matcapColor*diffuse*2,saturate(frensel));
+				return diffuse + lerp(reflectColor ,refractColor,_FrenselScale);
+              //  return lerp(float4(worldRefr,1.0f)*matcapColor,matcapColor*diffuse*2,saturate(frensel));
 			   
 			}
 			ENDCG
