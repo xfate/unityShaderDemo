@@ -17,9 +17,9 @@
 	}
 	SubShader
 	{
-		Tags { "RenderType"="Opaque" }
+	
 		LOD 100
-
+   		Tags{"LightMode"="ForwardBase"}
 		Pass
 		{
 			CGPROGRAM
@@ -55,7 +55,7 @@
 			sampler2D _tSpecShift;
 			float _PrimaryShift;
 			float _SecondaryShift;
-			float4 MainColor;
+			float4 _MainColor;
 			float _specExp1;
 			float _specExp2;
 			float4 _specularColor1;
@@ -104,9 +104,9 @@
 
 				float3 tangent = float3(i.TtoW0.x,i.TtoW1.x,i.TtoW2.x);
 				float shiftTex = tex2D(_tSpecShift,i.uv).r;
-				float3 t1 = ShiftTangent(worldBinormal,normal,_PrimaryShift+shiftTex);
+				float3 t1 = ShiftTangent(-worldBinormal,normal,_PrimaryShift+shiftTex);
 				float3 t2 = ShiftTangent(worldBinormal,normal,_SecondaryShift+shiftTex);
-				float3 diffuse = mainTex.rgb* MainColor.rgb;
+				float3 diffuse = mainTex.rgb* _MainColor.rgb;
 				half3 spec1 = StrandSpecular(t1, viewDir, lightDir, _specExp1)* _specularColor1;
 				half3 spec2 = StrandSpecular(t2, viewDir, lightDir, _specExp2)* _specularColor2;
 
