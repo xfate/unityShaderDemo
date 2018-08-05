@@ -8,7 +8,24 @@ public class Outline_ImageEffect : ImageEffectBase
     private Camera m_mainCamera;
     private Camera m_outlineCamera;
     public Shader m_outlineShader;
+    [Range(1, 8)]
     public int m_downSampler;
+
+    private Material m_outlineMat;
+    public Shader m_outlinePreShader;
+    [Range(1, 2)]
+    public int blurIterator;
+    public Color outlineColor;
+
+    public Material outlineMaterial
+    {
+        get
+        {
+            m_outlineMat = CheckShaderAndCreateMaterial(m_outlineShader, m_outlineMat);
+            return m_outlineMat;
+        }
+    }
+
     private void AddOutlineCamera()
     {
         m_mainCamera = GetComponent<Camera>();
@@ -18,6 +35,7 @@ public class Outline_ImageEffect : ImageEffectBase
             m_outlineCamera = null;
         }
         m_outlineCamera = new GameObject("outlineCamera").AddComponent<Camera>();
+        SetOutlineCamera();
 
     }
     private void SetOutlineCamera()
@@ -30,7 +48,7 @@ public class Outline_ImageEffect : ImageEffectBase
             m_outlineCamera.fieldOfView = m_mainCamera.fieldOfView;
             m_outlineCamera.backgroundColor = Color.clear;
             m_outlineCamera.clearFlags = CameraClearFlags.Color;
-            m_outlineCamera.cullingMask = 1 << LayerMask.NameToLayer("Actor");
+            m_outlineCamera.cullingMask = 1 << LayerMask.NameToLayer("Player");
 
             if (!m_renderTexture)
             {
@@ -63,7 +81,7 @@ public class Outline_ImageEffect : ImageEffectBase
         if (m_renderTexture)
         {
             RenderTexture.ReleaseTemporary(m_renderTexture);
-            RenderTexture.Destroy(m_renderTexture);
+            RenderTexture.DestroyImmediate(m_renderTexture);
         }
         
     }
@@ -74,12 +92,30 @@ public class Outline_ImageEffect : ImageEffectBase
         if (m_outlineCamera.enabled)
         {
             m_outlineCamera.targetTexture = m_renderTexture;
-            m_outlineCamera.RenderWithShader(m_outlineShader, "");
+            m_outlineCamera.RenderWithShader(m_outlinePreShader, "");//渲染了一张纯色RT
         }
     }
     private void OnRenderImage(RenderTexture source, RenderTexture destination)
     {
-       // var tmp1 = RenderTexture.GetTemporary(Screen)
+        int rtW = source.width >> m_downSampler;
+        int rtH = source.height >> m_downSampler;
+        var temp1 = RenderTexture.GetTemporary(rtW, rtH, 0);
+        var temp2 = RenderTexture.GetTemporary(rtW, rtH, 0);
+        // 先模糊纯色的图片
+        Graphics.Blit(m_renderTexture, temp1);
+        for (int i = 0; i < blurIterator; ++i)
+        {
+            Graphics.Blit(temp1, temp2, outlineMaterial, 0);
+            Graphics.Blit(temp2, temp1, outlineMaterial, 1);
+        }
+        //add
+        //把模糊的边框加到原来的照片中
+        outlineMaterial.SetTexture("_BlurTex", temp2);
+        outlineMaterial.SetTexture("_OriTex", m_renderTexture);
+        outlineMaterial.SetColor("_OutlineColor", outlineColor);
+        Graphics.Blit(source, destination, outlineMaterial, 2);
+        RenderTexture.ReleaseTemporary(temp1);
+        RenderTexture.ReleaseTemporary(temp2);
     }
     
 }

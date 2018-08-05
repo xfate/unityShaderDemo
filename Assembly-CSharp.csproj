@@ -52,20 +52,28 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\fog\AltitudeFog_ImageEffect.cs" />
+     <Compile Include="Assets\Scripts\Blur_ImageEffect.cs" />
      <Compile Include="Assets\Scripts\BSC_ImageEffect.cs" />
      <Compile Include="Assets\Scripts\Edge_ImageEffect.cs" />
      <Compile Include="Assets\Scripts\ImageEffectBase.cs" />
+     <Compile Include="Assets\Scripts\Outline_ImageEffect.cs" />
      <None Include="Assets\Shader\ParallaxMapping.shader" />
+     <None Include="Assets\Shader\GaussianBlur.shader" />
      <None Include="Assets\fog\shader\AltitudeFog.shader" />
      <None Include="Assets\matcap\matcap_normal.shader" />
+     <None Include="Assets\silhouette\outline_PostEffect.shader" />
+     <None Include="Assets\silhouette\outline.shader" />
      <None Include="Assets\Shader\EdgeCheck_ImageEffect.shader" />
+     <None Include="Assets\Shader\Blur.cginc" />
      <None Include="Assets\fog\shader\Depth.shader" />
      <None Include="Assets\Shader\rain.shader" />
      <None Include="Assets\fog\shader\AltitudeFog_ImageEffect.shader" />
+     <None Include="Assets\hair\fur.shader" />
      <None Include="Assets\matcap\matcap_crystal.shader" />
      <None Include="Assets\Shader\BSC_ImageEffect.shader" />
      <None Include="Assets\matcap\matcap_diffuse.shader" />
      <None Include="Assets\hair\hair.shader" />
+     <None Include="Assets\silhouette\outline_Pre.shader" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>

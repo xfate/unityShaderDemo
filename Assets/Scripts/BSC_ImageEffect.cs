@@ -31,7 +31,7 @@ public class BSC_ImageEffect : ImageEffectBase {
             material.SetFloat("_Brightness", brightness);
             material.SetFloat("_Saturation", saturation);
             material.SetFloat("_Contrast", contrast);
-            Graphics.Blit(src, dst, material);
+            Graphics.Blit(src, dst, material,2);
         }
         else
         {
