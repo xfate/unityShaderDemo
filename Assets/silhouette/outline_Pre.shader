@@ -1,6 +1,9 @@
 ﻿Shader "xjm/outline_pre"
 {
-
+		Properties
+	{
+		_OutlineColor("OutLine Color",Color) = (1,1,1,1)
+	}
 	SubShader
 	{
 
@@ -13,7 +16,7 @@
 			#pragma vertex vert
 			#pragma fragment frag
 
-
+			float4 _OutlineColor;
 			struct appdata
 			{
 				float4 vertex : POSITION;
@@ -34,7 +37,7 @@
 			
 			fixed4 frag (v2f i) : SV_Target
 			{
-				return float4(1,1,0,1);
+				return _OutlineColor;
 			}
 			ENDCG
 		}

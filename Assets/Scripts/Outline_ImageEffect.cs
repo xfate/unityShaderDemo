@@ -50,11 +50,12 @@ public class Outline_ImageEffect : ImageEffectBase
             m_outlineCamera.clearFlags = CameraClearFlags.Color;
             m_outlineCamera.cullingMask = 1 << LayerMask.NameToLayer("Player");
 
+            m_outlineCamera.depth = -999;
             if (!m_renderTexture)
             {
                 int width = m_outlineCamera.pixelWidth >> m_downSampler;
                 int height = m_outlineCamera.pixelHeight >> m_downSampler;
-                m_renderTexture = RenderTexture.GetTemporary(width, height);
+                m_renderTexture = RenderTexture.GetTemporary(width, height, 24);
             }
         }
     }
@@ -99,8 +100,8 @@ public class Outline_ImageEffect : ImageEffectBase
     {
         int rtW = source.width >> m_downSampler;
         int rtH = source.height >> m_downSampler;
-        var temp1 = RenderTexture.GetTemporary(rtW, rtH, 0);
-        var temp2 = RenderTexture.GetTemporary(rtW, rtH, 0);
+        var temp1 = RenderTexture.GetTemporary(rtW, rtH, 24);
+        var temp2 = RenderTexture.GetTemporary(rtW, rtH, 24);
         // 先模糊纯色的图片
         Graphics.Blit(m_renderTexture, temp1);
         for (int i = 0; i < blurIterator; ++i)

@@ -13,6 +13,7 @@ Shader "xjm/outline_postEffect"
 	CGINCLUDE
 	#include "UnityCG.cginc"
 	uniform half4 _MainTex_TexelSize;
+	
 	float _BlurSize;	
 	sampler2D _MainTex;
 	sampler2D _BlurTex;
@@ -89,10 +90,11 @@ Shader "xjm/outline_postEffect"
 	{
 		//获取屏幕
 		fixed4 scene = tex2D(_MainTex, i.uv1);
-		fixed4 blurCol = tex2D(_BlurTex,i.uv);
-		fixed4 pureCol = tex2D(_OriTex,i.uv);
-		fixed4 outlineColor = blurCol - pureCol;
-		return scene * (1 - all(outlineColor.rgb))  +  _OutlineColor*any(outlineColor.rgb);
+		fixed4 blurCol = tex2D(_BlurTex,i.uv1);
+		fixed4 pureCol = tex2D(_OriTex,i.uv1);
+		return (blurCol - pureCol)+scene;
+		//fixed4 outlineColor = clamp(blurCol - pureCol,0,1);
+	//	return scene * (1 - all(outlineColor.rgb))  +  _OutlineColor*any(outlineColor.rgb);
 
 		
 	}
