@@ -15,11 +15,12 @@ public class Outline_CommandBuffer : ImageEffectBase
     private Material m_outlineMat;
     public Shader m_outlinePreShader;
     private Material m_outlinePreMat;
-    [Range(1, 2)]
+    [Range(0, 2)]
     public int blurIterator;
     public float blurSize = 1.0f;
     public Color outlineColor;
-
+    public bool hardSide = false;
+    public bool onlyShowBlur = false;
     private CommandBuffer m_commandBuffer;
     public Renderer[] Renderers;
     public Material outlineMaterial
@@ -43,7 +44,7 @@ public class Outline_CommandBuffer : ImageEffectBase
   
         m_commandBuffer = new CommandBuffer();
         if (m_renderTexture == null)
-            m_renderTexture = RenderTexture.GetTemporary(Screen.width >> m_downSampler, Screen.height >> m_downSampler, 16);
+            m_renderTexture = RenderTexture.GetTemporary(Screen.width >> m_downSampler, Screen.height >> m_downSampler, 0);
         m_commandBuffer.SetRenderTarget(m_renderTexture);
         m_commandBuffer.ClearRenderTarget(true, true, Color.black);
         foreach (var renderer in Renderers)
@@ -87,10 +88,26 @@ public class Outline_CommandBuffer : ImageEffectBase
             Graphics.Blit(temp2, temp1, outlineMaterial, 0);
             Graphics.Blit(temp1, temp2, outlineMaterial, 1);
         }
+        if (onlyShowBlur)
+        {
+            Graphics.Blit(temp2, destination);
+            RenderTexture.ReleaseTemporary(temp1);
+            RenderTexture.ReleaseTemporary(temp2);
+            return;
+        }
         //add
         //把模糊的边框加到原来的照片中
+        if (hardSide)
+        {
+            outlineMaterial.EnableKeyword("_Hard_Side");
+            outlineMaterial.SetColor("_OutlineColor", outlineColor);
+        }
+        else
+        {
+            outlineMaterial.DisableKeyword("_Hard_Side");
+        }
         outlineMaterial.SetTexture("_BlurTex", temp2);
-        outlineMaterial.SetTexture("_OriTex", m_renderTexture);
+        outlineMaterial.SetTexture("_SrcTex", m_renderTexture);
         outlineMaterial.SetFloat("_BlurSize", blurSize);
         Graphics.Blit(source, destination, outlineMaterial, 2);
         RenderTexture.ReleaseTemporary(temp1);

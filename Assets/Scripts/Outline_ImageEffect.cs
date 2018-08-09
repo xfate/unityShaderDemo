@@ -16,7 +16,7 @@ public class Outline_ImageEffect : ImageEffectBase
     [Range(1, 2)]
     public int blurIterator;
     public Color outlineColor;
-
+    public bool hardSide = false;
     public Material outlineMaterial
     {
         get
@@ -100,19 +100,28 @@ public class Outline_ImageEffect : ImageEffectBase
     {
         int rtW = source.width >> m_downSampler;
         int rtH = source.height >> m_downSampler;
-        var temp1 = RenderTexture.GetTemporary(rtW, rtH, 24);
-        var temp2 = RenderTexture.GetTemporary(rtW, rtH, 24);
+        var temp1 = RenderTexture.GetTemporary(rtW, rtH, 0);
+        var temp2 = RenderTexture.GetTemporary(rtW, rtH, 0);
         // 先模糊纯色的图片
         Graphics.Blit(m_renderTexture, temp1);
+        // 模糊迭代
         for (int i = 0; i < blurIterator; ++i)
         {
             Graphics.Blit(temp1, temp2, outlineMaterial, 0);
             Graphics.Blit(temp2, temp1, outlineMaterial, 1);
         }
-        //add
-        //把模糊的边框加到原来的照片中
+  
+        if (hardSide)
+        {
+            outlineMaterial.EnableKeyword("_Hard_Side");
+        }
+        else
+        {
+            outlineMaterial.DisableKeyword("_Hard_Side");
+        }
+
         outlineMaterial.SetTexture("_BlurTex", temp2);
-        outlineMaterial.SetTexture("_OriTex", m_renderTexture);
+        outlineMaterial.SetTexture("_SrcTex", m_renderTexture);
         outlineMaterial.SetColor("_OutlineColor", outlineColor);
         Graphics.Blit(source, destination, outlineMaterial, 2);
         RenderTexture.ReleaseTemporary(temp1);
