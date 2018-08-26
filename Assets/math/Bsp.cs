@@ -53,7 +53,7 @@ public class Bsp : MonoBehaviour {
     {
         if(Event.current.keyCode == KeyCode.Space)
         {
-            Event.current.mousePosition
+            
         }
     }
     void ButtonClick()

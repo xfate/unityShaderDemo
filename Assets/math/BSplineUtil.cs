@@ -5,7 +5,7 @@ using UnityEngine;
 public class BSplineUtil
 {
 
-    static Vector3 DeBoor(int j, int k,int i, float t,List<Vector3> controlPoints,List<float> knots)
+    public static Vector3 DeBoor(int j, int k,int i, float t,List<Vector3> controlPoints,List<float> knots)
     {
         if (j == 0)
             return controlPoints[i];
@@ -17,7 +17,7 @@ public class BSplineUtil
         }
     }
 
-    static List<Vector3> GetBspline(List<Vector3> controlPoints,float detail,string type)
+    public static List<Vector3> GetBspline(List<Vector3> controlPoints,float detail,string type)
     {
         List<Vector3> points = new List<Vector3>();
         int degree = controlPoints.Count <= 3 ? controlPoints.Count - 1 : 3;
@@ -42,7 +42,7 @@ public class BSplineUtil
         }
         return points;
     }
-    static int whichInterval(float x,List<float> knots)
+    public static int whichInterval(float x,List<float> knots)
     {
         for (int i = 1; i < knots.Count - 1; i++)
         {
@@ -53,7 +53,7 @@ public class BSplineUtil
         }
         return -1;
     }
-    static List<float> createOpenKnots(int nControl, int degree)
+    public static List<float> createOpenKnots(int nControl, int degree)
     {
         int nKnots = nControl + degree + 1;
 
@@ -66,7 +66,7 @@ public class BSplineUtil
         }
         return knots;
     }
-    static List<float> createKnots(int nControl, int degree)
+    public static List<float> createKnots(int nControl, int degree)
     {
         int nKnots = nControl + degree + 1;
 
