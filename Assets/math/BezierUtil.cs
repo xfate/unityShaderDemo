@@ -13,16 +13,23 @@ public class BezierUtil  {
     /// <param name="t"></param>
     public static Vector3 GetBezierPoint_SecondOrder(Vector3 p0, Vector3 p1, Vector3 p2,float t)
     {
-        return (1-t) * (1-t) * p0 + (1 - t) * p1 + t * t * p2;
+        return (1-t) * (1-t) * p0 + 2*(1 - t)*t * p1 + t * t * p2;
     }
-
+    /// <summary>
+    /// 获取贝塞尔曲线
+    /// </summary>
+    /// <param name="points"></param>
+    /// <param name="p0"></param>
+    /// <param name="p1"></param>
+    /// <param name="p2"></param>
+    /// <param name="num"></param>
     public static void GetBezier(ref Vector3[] points,Vector3 p0, Vector3 p1, Vector3 p2,int num)
     {
-        float line = Vector3.Distance(p2, p0);
-        float step = line / num;
-        for (int i = 0; i < num; ++i)
+        for (int i = 1; i <= num; ++i)
         {
-            points[i] = GetBezierPoint_SecondOrder(p0, p1, p2, i * step);
+            float t =  i / (float)num;
+            points[i-1] = GetBezierPoint_SecondOrder(p0, p1, p2, t);
+      
         }
     }
 }
