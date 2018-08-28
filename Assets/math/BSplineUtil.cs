@@ -19,7 +19,7 @@ public class BSplineUtil
         else
         {
             float param = 0.0f;
-            float sub = (knots[i + k + 1 - j] - knots[i]);
+            float sub = (knots[i + k - j] - knots[i]);
             if (sub != 0)
             {
                 param = (t - knots[i]) / sub;
@@ -34,17 +34,17 @@ public class BSplineUtil
         }
     }
 
-    public static List<Vector3> GetBspline(List<Vector3> controlPoints,int detail, eBSPLINE_TYPE type,int degree = -1)
+    public static List<Vector3> GetBspline(List<Vector3> controlPoints,int detail, eBSPLINE_TYPE type,int order = -1)
     {
         List<Vector3> points = new List<Vector3>();
-        if (degree == -1 || degree < 3)
-            degree = controlPoints.Count <= 3 ? controlPoints.Count - 1 : 3;
+        if (order == -1 || order < 4)
+            order = controlPoints.Count <= 4 ? controlPoints.Count : 4;
         float[] knots = null;
         if (type == eBSPLINE_TYPE.eClamped)
-            knots = createKnots(controlPoints.Count,degree);
+            knots = createKnots(controlPoints.Count,order);
         else
-            knots = createOpenKnots(controlPoints.Count, degree);
-        float zJump = (knots[knots.Length - 1 - degree] - knots[degree]) / (detail-1);
+            knots = createOpenKnots(controlPoints.Count, order);
+        float zJump = (knots[knots.Length - order] - knots[order-1]) / (detail-1);
         float z;
         Vector3 point = new Vector3();
         for (int i = 0; i < detail; i++)
@@ -55,11 +55,11 @@ public class BSplineUtil
             }
             else
             {
-                z = knots[degree] + i * zJump;
+                z = knots[order-1] + i * zJump;
                 int zInt = whichInterval(z, knots);
                 if (controlPoints.Count <= zInt)
                     continue;
-                point = DeBoor(degree, degree, zInt, z, controlPoints, knots);
+                point = DeBoor(order-1, order, zInt, z, controlPoints, knots);
             }
             points.Add(point);
         }
@@ -76,9 +76,9 @@ public class BSplineUtil
         }
         return -1;
     }
-    public static float[] createOpenKnots(int nControl, int degree)
+    public static float[] createOpenKnots(int nControl, int order)
     {
-        int nKnots = nControl + degree + 1;
+        int nKnots = nControl + order;
 
         var knots = new float[nKnots];
 
@@ -89,18 +89,18 @@ public class BSplineUtil
         }
         return knots;
     }
-    public static float[] createKnots(int nControl, int degree)
+    public static float[] createKnots(int nControl, int order)
     {
-        int nKnots = nControl + degree + 1;
+        int nKnots = nControl + order;
 
         var knots = new float[nKnots];
         for (int i = 0; i < nKnots; i++)
         {
-            if (i < degree + 1) //节点t 属于k-1，n+1
+            if (i < order) //节点t 属于k-1，n+1
             {
                 knots[i] = 0;
             }
-            else if (i < nKnots - degree)
+            else if (i < nKnots - order+1)
             {
                 knots[i] = knots[i - 1] + 1;//k-1，n+1 在这个范围内递增
             }

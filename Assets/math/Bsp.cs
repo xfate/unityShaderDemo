@@ -18,8 +18,8 @@ public class Bsp : MonoBehaviour
     bool isRenderLine = false;
     public BSplineUtil.eBSPLINE_TYPE type = BSplineUtil.eBSPLINE_TYPE.eClamped;
     [Range(3,100)]
-    public int degree = 3;
-    public bool customdegree = false;
+    public int order = 4;
+    public bool customorder = false;
     void Start()
     {
 
@@ -89,8 +89,8 @@ public class Bsp : MonoBehaviour
             DrawLine_Impl(points, Color.red);
         }
         List<Vector3> bspPoints;
-        if (customdegree)
-            bspPoints = BSplineUtil.GetBspline(posList, num, type,degree);
+        if (customorder)
+            bspPoints = BSplineUtil.GetBspline(posList, num, type, order);
         else
             bspPoints = BSplineUtil.GetBspline(posList, num, type);
         DrawLine_Impl(bspPoints.ToArray(), Color.blue);
