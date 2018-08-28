@@ -19,6 +19,7 @@ public class Bsp : MonoBehaviour
     public BSplineUtil.eBSPLINE_TYPE type = BSplineUtil.eBSPLINE_TYPE.eClamped;
     [Range(3,100)]
     public int degree = 3;
+    public bool customdegree = false;
     void Start()
     {
 
@@ -82,12 +83,16 @@ public class Bsp : MonoBehaviour
     {
         if (!isRenderLine || LineMat == null)
             return;
-        for (int i = 0; i < posList.Count-1; ++i)
+        for (int i = 0; i < posList.Count - 1; ++i)
         {
-            var points = new Vector3[] { posList[i], posList[i+1] };
+            var points = new Vector3[] { posList[i], posList[i + 1] };
             DrawLine_Impl(points, Color.red);
         }
-        var  bspPoints = BSplineUtil.GetBspline(posList, num, type);
+        List<Vector3> bspPoints;
+        if (customdegree)
+            bspPoints = BSplineUtil.GetBspline(posList, num, type,degree);
+        else
+            bspPoints = BSplineUtil.GetBspline(posList, num, type);
         DrawLine_Impl(bspPoints.ToArray(), Color.blue);
     }
 

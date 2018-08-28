@@ -13,11 +13,22 @@ public class BSplineUtil
     public static Vector3 DeBoor(int j, int k,int i, float t,List<Vector3> controlPoints,float[] knots)
     {
         if (j == 0)
+        {
             return controlPoints[i];
+        }
         else
         {
-
-            float param = (t - knots[i]) / (knots[i + k+1- j] - knots[i]);
+            float param = 0.0f;
+            float sub = (knots[i + k + 1 - j] - knots[i]);
+            if (sub != 0)
+            {
+                param = (t - knots[i]) / sub;
+            }
+            else
+            {
+                param = 0.0f;
+            }
+           
             return ((1-param) * DeBoor(j - 1, k, i - 1, t, controlPoints, knots)
                 + param * DeBoor(j - 1, k, i, t, controlPoints, knots)); 
         }
@@ -46,6 +57,8 @@ public class BSplineUtil
             {
                 z = knots[degree] + i * zJump;
                 int zInt = whichInterval(z, knots);
+                if (controlPoints.Count <= zInt)
+                    continue;
                 point = DeBoor(degree, degree, zInt, z, controlPoints, knots);
             }
             points.Add(point);
