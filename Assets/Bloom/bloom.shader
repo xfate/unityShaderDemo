@@ -1,11 +1,12 @@
 // Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
 
-	Shader "xjm/MobileBloom" 
+	Shader "xjm/Post/MobileBloom" 
 	{
 		Properties 
 		{
 			_MainTex ("Base (RGB)", 2D) = "white" {}
 			_Bloom ("Bloom (RGB)", 2D) = "black" {}
+			_Exposure("Exposure",float) = 1
 		}
 		
 		CGINCLUDE
@@ -19,7 +20,7 @@
 		uniform half4 _Parameter;
 		uniform half4 _OffsetsA;
 		uniform half4 _OffsetsB;
-	
+		float _Exposure;
 		fixed _conAmount; 
 			
 		#pragma shader_feature _ALPHA_GLOSS_ON
@@ -60,7 +61,6 @@
 			half2 uv22 : TEXCOORD2;
 			half2 uv23 : TEXCOORD3;
 		};			
-	    //��ֵģ��
 		v2f_tap vert4Tap ( appdata_img v )
 		{
 			v2f_tap o;
@@ -220,7 +220,29 @@
 			return color;
 	
 		}	
-						
+
+		fixed4 fragToneMapping (v2f_simple i) : SV_Target
+		{
+				// sample the texture
+	#if UNITY_UV_STARTS_AT_TOP		
+			fixed4 color = tex2D(_MainTex, i.uv2);			
+	#else
+			fixed4 color = tex2D(_MainTex, i.uv);				
+	#endif
+			
+    			
+    		const float A = 2.51f;
+			const float B = 0.03f;
+			const float C = 2.43f;
+			const float D = 0.59f;
+			const float E = 0.14f;
+
+			color *= _Exposure;
+			return (color * (A * color + B)) / (color * (C * color + D) + E);
+
+			//	float tone = _Exposure * (_Exposure / _Luminance+1)/(_Exposure+1);
+			//	return tex*tone;
+		}			
 		ENDCG
 		
 		SubShader 
@@ -315,7 +337,22 @@
 			
 				ENDCG
 			}	
+			// 6
+			Pass 
+			{		
+				ZTest Always
+				Cull Off
+					
+				CGPROGRAM
+			
+				#pragma vertex vertBloom
+				#pragma fragment fragToneMapping
+				#pragma fragmentoption ARB_precision_hint_fastest 
+			
+				ENDCG
+			}	
 		}	
+
 	
 		FallBack Off
 }
