@@ -13,6 +13,7 @@ namespace Assets.wetness
         public Material RainDropMat;
         Texture2D rainDropMap;
         public GameObject terrain;
+        public Transform LightDir;
         private void Start()
         {
             ripple = new RenderTexture(512, 512, 24);
@@ -33,9 +34,10 @@ namespace Assets.wetness
                 Vector4 t = Frac(Time.time * vec);
                 mat.SetFloat("_RainIntensity", rainIntensity);
                 mat.SetVector("_RainTime", t);
-                Graphics.Blit(rainDropMap, ripple, RainDropMat);
+                Graphics.Blit(rainDropMap, ripple, mat);
                 Renderer rd = terrain.GetComponent<Renderer>();
                 rd.material.SetTexture("_RippleTex", ripple);
+                rd.material.SetVector("_LightPos", new Vector4(LightDir.position.x, LightDir.position.y, LightDir.position.z,1.0f));
                 
             }
         }
