@@ -96,22 +96,29 @@
 				float3 rippleNormal = tex2D(_RippleTex,i.uv * _RippleDensity).xyz * 2 - 1;
 				float3 wRippleNormal = normalize(mul(matToW,rippleNormal));
 				float3 normal = lerp(wNormal,wRippleNormal,_AccumulateWater);		
-		
+				
 				DoWetShading(col.rgb, glossParam,_AccumulateWater);
-				float3 diffuse = _LightCol.rgb * col.rgb* max(0,dot(normal,lightDir));
-				//specular 
+				glossParam = lerp(glossParam, 1.0, _AccumulateWater);
+				
 				float3 halfDir = normalize(lightDir + viewDir);
-				float  specPower = exp2(glossParam * 8);
-				float3 specular = _LightCol.rgb * pow(max(0,dot(normal,halfDir)),specPower);
-				// frensel
+				float3 dotNH = max(0,dot(normal,halfDir));
+				float3 dotNL = max(0,dot(normal,lightDir));
 				float dotNV = saturate(dot(normal,viewDir));
+				// diffuse
+				float3 diffuse = _LightCol.rgb * col.rgb* dotNL;
+				//specular 【0-1024】
+				float  specPower = exp2(glossParam * 8);
+
+				// frensel
 				float f0 = lerp(_BrickF0,0.02,_AccumulateWater);
 				float frensel = f0 + (1 - f0) * pow((1 - dotNV),5);
-
+				//比起bllin-phong.乘了dotNL，高光颜色在眼睛与水面平行时，变暗。
+				float3 specular = frensel * ((specPower + 2.0) / 8.0)* pow(dotNH,specPower) * dotNL;
 				// reflection
 				float3 reflection = reflect(viewDir,normal);
 				float3 reflCol = texCUBE(_CubeMap,reflection) * glossParam;
-				float3 ambient = reflCol * 0.2;
+				
+				float3 ambient =reflCol * 0.2f;
 				
 				return float4(diffuse+specular+ambient,1.0f);
 			}

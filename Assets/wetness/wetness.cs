@@ -16,7 +16,7 @@ namespace Assets.wetness
         public Transform LightDir;
         private void Start()
         {
-            ripple = new RenderTexture(512, 512, 24);
+            ripple = new RenderTexture(256, 256, 24);
             ripple.name = "ripple";
             ripple.wrapMode = TextureWrapMode.Repeat;
         }
