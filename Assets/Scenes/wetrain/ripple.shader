@@ -73,12 +73,12 @@
 			{
 					float4 weight = _RainIntensity.xxxx - float4(0, 0.25, 0.5, 0.75);
 			weight = saturate(weight * 4);   
-   
+   			//几个ripple的混合
 			float3 ripple1 = ComputeRipple(i.uv + float2( 0.25f,0.0f), _RainTime.x, weight.x);
 			float3 ripple2 = ComputeRipple(i.uv + float2(-0.55f,0.3f), _RainTime.y, weight.y);
 			float3 ripple3 = ComputeRipple(i.uv + float2(0.6f, 0.85f), _RainTime.z, weight.z);
 			float3 ripple4 = ComputeRipple(i.uv + float2(0.5f,-0.75f), _RainTime.w, weight.w);
-
+		
 			float4 Z = lerp(1, float4(ripple1.z, ripple2.z, ripple3.z, ripple4.z), weight);
 			float3 N = float3(
 				weight.x * ripple1.xy +
@@ -86,6 +86,7 @@
 				weight.z * ripple3.xy + 
 				weight.w * ripple4.xy, 
 				Z.x * Z.y * Z.z * Z.w);
+				//[-1,1]->[0,1]
 			return float4(normalize(N) * 0.5 + 0.5, 1.0); 
 				///return float4(ripple1.xyz,1.0);
 			}

@@ -14,6 +14,7 @@ namespace Assets.wetness
         Texture2D rainDropMap;
         public GameObject terrain;
         public Transform LightDir;
+        public float wetness = 0.5f;
         private void Start()
         {
             ripple = new RenderTexture(256, 256, 24);
@@ -37,6 +38,8 @@ namespace Assets.wetness
                 Graphics.Blit(rainDropMap, ripple, mat);
                 Renderer rd = terrain.GetComponent<Renderer>();
                 rd.material.SetTexture("_RippleTex", ripple);
+                rd.material.SetFloat("_FloodLevel1", Mathf.Min(wetness * 2, 1));
+                rd.material.SetFloat("_FloodLevel2", wetness * 2);
                 rd.material.SetVector("_LightPos", new Vector4(LightDir.position.x, LightDir.position.y, LightDir.position.z,1.0f));
                 
             }
