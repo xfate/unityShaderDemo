@@ -1,60 +1,140 @@
-﻿Shader "Unlit/NewUnlitShader"
+﻿// Upgrade NOTE: replaced '_World2Object' with 'unity_WorldToObject'
+
+Shader "xjm/furShader"
 {
 	Properties
 	{
 		_MainTex ("Texture", 2D) = "white" {}
+		_FurLength("Fur Length", Range(0.0, 1)) = 0.5
+		_FurTex("Fur Texture",2D)=""{}
+		_Thinkness("Thinkness",float) = 1
+		_Gravity ("Gravity",Vector)=(0,0,0,0)
+		_FurDensity("Fur Density",float)=1
 	}
-	//CGINCLUDE
-	CGINCLUDE
-			float _FurLength;
-			#include "UnityCG.cginc"
-
-			struct appdata
-			{
-				float4 vertex : POSITION;
-				float2 uv : TEXCOORD0;
-				float3 normal:NORMAL0;
-			};
-
-			struct v2f
-			{
-				float2 uv : TEXCOORD0;
-				float4 vertex : SV_POSITION;
-			};
-
-			sampler2D _MainTex;
-			float4 _MainTex_ST;
-			
-			v2f vert_fur (appdata v)
-			{
-				v2f o;
-				float3 newPos = v.vertex + v.normal * _FurLength;
-				o.vertex = UnityObjectToClipPos(float4(newPos,1.0f));
-				o.uv = TRANSFORM_TEX(v.uv, _MainTex);
-				
-				return o;
-			}
-			
-			fixed4 frag_fur (v2f i) : SV_Target
-			{
-				// sample the texture
-				fixed4 col = tex2D(_MainTex, i.uv);
-				return col;
-			}
-ENDCG
-
+	    Category
+    {
+	
 	//ENDCG
 	SubShader
 	{
-		Tags { "RenderType"="Opaque" }
+			Tags { "RenderType" = "Transparent" "IgnoreProjector" = "True" "Queue" = "Transparent" }
+        Cull Off
+        ZWrite On
+        Blend SrcAlpha OneMinusSrcAlpha
 		LOD 100
 
 		Pass //0
 		{
 			CGPROGRAM
-			#pragma vertex vert_fur
-			#pragma fragment frag_fur
+			
+			#pragma vertex vert_base
+			#pragma fragment frag_base
+			#define FURSTEP 0
+			#include "fur.cginc"
 			ENDCG
 		}
+		Pass //1
+		{
+			CGPROGRAM
+			
+			#pragma vertex vert_fur
+			#pragma fragment frag_fur
+			#define FURSTEP 0.05
+			#include "fur.cginc"
+			ENDCG
+		}
+		Pass //2
+		{
+			CGPROGRAM
+			
+			#pragma vertex vert_fur
+			#pragma fragment frag_fur
+			#define FURSTEP 0.1
+			#include "fur.cginc"
+			ENDCG
+		}
+		Pass //3
+		{
+			CGPROGRAM
+			
+			#pragma vertex vert_fur
+			#pragma fragment frag_fur
+			#define FURSTEP 0.15
+			#include "fur.cginc"
+			ENDCG
+		}
+		
+		Pass //4
+		{
+			CGPROGRAM
+			
+			#pragma vertex vert_fur
+			#pragma fragment frag_fur
+			#define FURSTEP 0.2
+			#include "fur.cginc"
+			ENDCG
+		}
+		Pass //5
+		{
+			CGPROGRAM
+			
+			#pragma vertex vert_fur
+			#pragma fragment frag_fur
+			#define FURSTEP 0.25
+			#include "fur.cginc"
+			ENDCG
+		}
+				Pass //1
+		{
+			CGPROGRAM
+			
+			#pragma vertex vert_fur
+			#pragma fragment frag_fur
+			#define FURSTEP 0.3
+			#include "fur.cginc"
+			ENDCG
+		}
+		Pass //2
+		{
+			CGPROGRAM
+			
+			#pragma vertex vert_fur
+			#pragma fragment frag_fur
+			#define FURSTEP 0.35
+			#include "fur.cginc"
+			ENDCG
+		}
+		Pass //3
+		{
+			CGPROGRAM
+			
+			#pragma vertex vert_fur
+			#pragma fragment frag_fur
+			#define FURSTEP 0.4
+			#include "fur.cginc"
+			ENDCG
+		}
+		
+		Pass //4
+		{
+			CGPROGRAM
+			
+			#pragma vertex vert_fur
+			#pragma fragment frag_fur
+			#define FURSTEP 0.45
+			#include "fur.cginc"
+			ENDCG
+		}
+		Pass //5
+		{
+			CGPROGRAM
+			
+			#pragma vertex vert_fur
+			#pragma fragment frag_fur
+			#define FURSTEP 0.5
+			#include "fur.cginc"
+			ENDCG
+		}
+	}
 	}
 }
