@@ -10,6 +10,8 @@ Shader "xjm/furShader"
 		_Thinkness("Thinkness",float) = 1
 		_Gravity ("Gravity",Vector)=(0,0,0,0)
 		_FurDensity("Fur Density",float)=1
+		_FurShader("_FurShader",float)=0.05
+		
 	}
 	    Category
     {
