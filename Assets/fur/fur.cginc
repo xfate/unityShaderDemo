@@ -28,6 +28,10 @@
 			float3 _Gravity;
 			float _FurDensity;
 			float _FurShader;
+			float _Occlusion;
+			float _Brightness;
+			float3 _Wind;
+			float _WindSpeed;
             v2f vert_base (appdata v)
 			{
 				v2f o;
@@ -53,9 +57,10 @@
 			{
 				v2f o;
 				float3 newPos = v.vertex.xyz + v.normal *_FurLength*  FURSTEP;
-				//float3 gravity = mul(unity_ObjectToWorld,_Gravity);
+				float3 gravity = mul(unity_ObjectToWorld,_Gravity + sin(_WindSpeed * _Time.y) * _Wind) ;
+
 				float k = pow(FURSTEP,3);
-				newPos = newPos + _Gravity *k;
+				newPos = newPos + gravity *k;
 				o.vertex = UnityObjectToClipPos(float4(newPos,1.0f));
 				//加入毛发阴影，越是中心位置，阴影越明显，边缘位置阴影越浅
 				float znormal = 1 - dot(v.normal,float3(0,0,1));
@@ -73,18 +78,19 @@
 			
 			
 				//增加毛发阴影，毛发越靠近根部的像素点颜色越暗
-				//col.rgb-= (pow(1-FURSTEP, 3))*_FurShader;
+				col.rgb-= (pow(1-FURSTEP, 3))*_FurShader;
 				
 				fixed3 lightDir = normalize(_WorldSpaceLightPos0);
 				//_Thinkness 毛发细度，改变tile增强毛发细度
-                float4 furCol = tex2D(_FurTex,i.uv.xy* _Thinkness);
-				fixed4 ColOffset = tex2D(_FurTex, i.uv.xy*_Thinkness+i.uv.zw );
-				float3 final = dot(float3(0.299,0.587,0.114) ,col.rgb - ColOffset.rgb);
-				col.rgb-=final*_FurShader;
+                // float4 furCol = tex2D(_FurTex,i.uv.xy* _Thinkness);
+				// fixed4 ColOffset = tex2D(_FurTex, i.uv.xy*_Thinkness+i.uv.zw );
+				// float3 final = dot(float3(0.299,0.587,0.114) ,col.rgb - ColOffset.rgb);
+				// col.rgb-=final*_FurShader;
 		
 				fixed3 diffuse = _LightColor0.rgb*col.rgb * max(0,dot(normalize(i.normal),lightDir));
-                float alpha =  clamp(furCol.r - (FURSTEP * FURSTEP) * _FurDensity, 0, 1);
-    	
+               // float alpha =  clamp(furCol.r - (FURSTEP * FURSTEP) * _FurDensity, 0, 1);
+				col.rgb = (col.rgb*(1 - _Occlusion*(1-(sqrt(half(max(FURSTEP*2,0.001))))))*(_Brightness));
+				fixed alpha = clamp(col.a*(_FurDensity*2)*(1-FURSTEP*2),0,1);
     			return float4(col.rgb+diffuse,alpha);
 			}
  

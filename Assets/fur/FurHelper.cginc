@@ -77,7 +77,8 @@ fixed4 frag_base(v2f i): SV_Target
     fixed3 specular = _LightColor0.rgb * _Specular.rgb * pow(saturate(dot(worldNormal, worldHalf)), _Shininess);
 
     fixed3 color = ambient + diffuse + specular;
-    fixed alpha = tex2D(_FurTex, i.uv.zw).rgb;
-    
-    return fixed4(color, 1);
+    fixed alpha = min(1, a*(_Thinkness*2))*(1-FURSTEP));
+   
+
+    return fixed4(color, alpha);
 }
